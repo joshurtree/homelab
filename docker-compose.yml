@@ -3,12 +3,16 @@ volumes:
     adguard-conf:
     adguard-work:
     nextcloud:
-    homeassistant:
+    homeassistant-config:
+    db:
 
 secrets:
-    db_root: ./secrets/db_root.txt
-    db: ./secrets/db.txt
-    tunnel: ./secrets/tunnel.txt
+    db_root: 
+        file: ./secrets/db_root
+    db: 
+        file: ./secrets/db
+    tunnel: 
+        file: ./secrets/tunnel
 
 services:
     web:
@@ -21,7 +25,7 @@ services:
             - 80:80
 
     adguard:
-        image: adguardhome
+        image: adguard/adguardhome
         restart: unless-stopped
         volumes:
             - adguard-conf:/opt/adguardhome/conf
@@ -37,10 +41,13 @@ services:
         volumes:
             - db:/var/lib/mysql
         environment:
-            MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root
-            MYSQL_PASSWORD_FILE: /run/secrets/db
-            MYSQL_DATABASE: nextcloud
-            MYSQL_USER: nextcloud
+            MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root
+            MARIADB_PASSWORD_FILE: /run/secrets/db
+            MARIADB_DATABASE: nextcloud
+            MARIADB_USER: nextclo
+        secrets:
+            - db
+            - db_root
 
     nextcloud:
         image: nextcloud:fpm
@@ -50,20 +57,23 @@ services:
         volumes:
             - nextcloud:/var/www/html
         environment:
-            MYSQL_PASSWORD_FILE: /run/secrets/db
-            MYSQL_DATABASE: nextcloud
-            MYSQL_USER: nextcloud
-            MYSQL_HOST: db
+            MARIADB_PASSWORD_FILE: /run/secrets/db
+            MARIADB_DATABASE: nextcloud
+            MARIADB_USER: nextcloud
+            MARIADB_HOST: db
+        secrets:
+            - db
 
     homeassistant:
         image: homeassistant/home-assistant
         restart: unless-stopped
         volumes:
-            - haconf:/config
+            - homeassistant-config:/config
             - /etc/localtime:/etc/localtime:ro
 
     tunnel:
         image: cloudflare/cloudflared
-        command: TUNNEL_TOKEN=$${< /run/secrets/tunnel} && tunnel run ] 
+        command: TUNNEL_TOKEN=$${< /run/secrets/tunnel} && tunnel run --no-autoupdate  
         restart: always
-        
+        secrets:
+            - db
