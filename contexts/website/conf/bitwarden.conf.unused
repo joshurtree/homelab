@@ -1,0 +1,12 @@
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name bitwarden.joshandrews.xyz;
+
+    ssl_certificate /etc/letsencrypt/live/bitwarden.joshandrews.xyz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/bitwarden.joshandrews.xyz/privkey.pem;
+
+    location / {
+        proxy_pass http://bitwarden;
+    }
+}

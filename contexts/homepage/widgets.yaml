@@ -1,0 +1,42 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/service-widgets
+
+- resources:
+    cpu: true
+    memory: true
+    cputemp: true
+    uptime: true
+    disk: /
+    label: Homelab
+
+- glances:
+    url: "http://{{HOMEPAGE_VAR_LAPTOP_IP}}:61208"
+    cpu: true # optional, enabled by default, disable by setting to false
+    mem: true # optional, enabled by default, disable by setting to false
+    cputemp: true # disabled by default
+    uptime: true # disabled by default
+    disk:
+        - /
+        - /home
+    expanded: false
+    label: Laptop
+#- glances:
+#    url: "http://{{HOMEPAGE_VAR_PIHOLE_IP}}:61208
+#    cpu: false # optional, enabled by default, disable by setting to false
+#    mem: false # optional, enabled by default, disable by setting to false
+#    cputemp: false # disabled by default
+#    uptime: false # disabled by default
+#    expanded: false
+#    label: DNS Server
+
+- openmeteo:
+    latitude: 53.34075
+    longitude: -1.33369
+    units: metric 
+    cache: 5 
+
+- datetime:
+    text_size: xl
+    format:
+      timeStyle: short

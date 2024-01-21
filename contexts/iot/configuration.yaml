@@ -1,0 +1,6 @@
+http:
+    server_port: 80
+    base_url: iot.joshandrews.xyz
+    use_x_fowarded_for: true
+    trusted_proxies:
+        - 172.25.0.0/16

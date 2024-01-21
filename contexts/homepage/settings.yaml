@@ -1,0 +1,23 @@
+title: Josh's Homelab
+theme: dark
+color: slate
+
+layout:
+    Servers:
+        style: column
+        header: false
+    Calendar:
+        style: column
+        header: false
+
+    Laptop:
+        style: row
+        columns: 4
+
+    Homelab:
+        style: row
+        columns: 4
+        
+    DNS Server:
+        style: row
+        columns: 4

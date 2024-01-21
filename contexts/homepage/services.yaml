@@ -1,0 +1,111 @@
+- Servers:
+    - PiHole:
+        icon: pi-hole.png
+        href: http://pihole/admin
+        description: Pi Hole (DNS server)
+        widget:
+            type: pihole
+            url: http://pihole
+            key: "{{HOMEPAGE_FILE_PIHOLE_KEY}}"
+
+    - HomeAssistant:
+        icon: home-assistant.png
+        href: https://iot.joshandrews.xyz
+        description: Home Assistant (Home automation)
+
+    - NextCloud:
+        icon: nextcloud.png
+        href: https://cloud.joshandrews.xyz
+        description: NextCloud (Cloud services)
+        widget:
+            type: nextcloud
+            url: https://cloud.joshandrews.xyz
+            key: "{{HOMEPAGE_FILE_NEXTCLOUD_KEY}}"
+- Calendar:
+    - Calendar:
+        widget:
+            type: calendar
+            firstDayInWeek: sunday # optional - defaults to monday
+            view: monthly # optional - possible values monthly, agenda
+            maxEvents: 10 # optional - defaults to 10
+            showTime: true # optional - show time for event happening today - defaults to false
+            #timezone: America/Los_Angeles # optional and only when timezone is not detected properly (slightly slower performance) - force timezone for ical events (if it's the same - no change, if missing or different in ical - will be converted to this timezone)
+
+- Laptop:
+    - info:
+        ping: acer-laptop
+        widget:
+            type: glances
+            url: http://acer-laptop:61208
+            metric: info 
+    - CPU Usage:
+        ping: acer-laptop
+        widget:
+            type: glances
+            url: http://acer-laptop:61208
+            metric: cpu 
+    - Memory:
+        ping: acer-laptop
+        widget:
+            type: glances
+            url: http://acer-laptop:61208
+            metric: memory 
+    - Network:
+        ping: acer-laptop
+        widget:
+            type: glances
+            url: http://acer-laptop:61208
+            metric: network:wlp2s0
+
+- Homelab:
+    - info:
+        ping: glances
+        widget:
+            type: glances
+            url: http://glances:61208
+            metric: info 
+    - CPU Usage:
+        ping: glances
+        widget:
+            type: glances
+            url: http://glances:61208
+            metric: cpu 
+    - Memory:
+        ping: glances
+        widget:
+            type: glances
+            url: http://glances:61208
+            metric: memory 
+    - Network:
+        ping: glances
+        widget:
+            type: glances
+            url: http://glances:61208
+            metric: network:eth0
+        
+- DNS Server:
+    - info:
+        ping: pihole
+        widget:
+            type: glances
+            url: http://pihole:61208
+            metric: info 
+
+    - CPU Usage:
+        ping: pihole
+        widget:
+            type: glances
+            url: http://pihole:61208
+            metric: cpu 
+    - Memory:
+        ping: pihole
+        widget:
+            type: glances
+            url: http://pihole:61208
+            metric: memory 
+    - Network:
+        ping: pihole
+        widget:
+            type: glances
+            url: http://pihole:61208
+            metric: network:eth0

@@ -1,30 +1,70 @@
 version: '3'
 volumes:
-    adguard-conf:
-    adguard-work:
     nextcloud:
     homeassistant-config:
     db:
+    bitwarden:
 
 secrets:
     db_root: 
         file: ./secrets/db_root
     db: 
         file: ./secrets/db
-    tunnel: 
-        file: ./secrets/tunnel
-
+    ddns_api:
+        file: ./secrets/ddns_api
+    pihole:
+        file: ./secrets/pihole
+    nextcloud:
+        file: ./secrets/nextcloud
+    
 services:
-    adguard:
-        image: adguard/adguardhome
-        restart: unless-stopped
-        volumes:
-            - adguard-conf:/opt/adguardhome/conf
-            - adguard-work:/opt/adguardhome/work
+    homelab:
+        image: ghcr.io/gethomepage/homepage:latest
         ports:
-            - 53:53 # DNS
-            - 67:67 # DHCP
-            - 3000:3000 # Install
+            - 3000:3000
+        volumes:
+            - ./contexts/homepage:/app/config # Make sure your local config directory exists
+            - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
+        environment:
+            PUID: 
+            PGID:
+            HOMEPAGE_FILE_PIHOLE_KEY: /run/secrets/pihole 
+            HOMEPAGE_VAR_PIHOLE_KEY:
+            HOMEPAGE_VAR_PIHOLE_IP:
+            HOMEPAGE_VAR_LAPTOP_IP:
+            HOMEPAGE_VAR_HOMELAB_IP:
+            HOMEPAGE_FILE_NEXTCLOUD_KEY: /run/secrets/nextcloud
+        dns:
+            - $HOME_DNS
+        secrets:
+          - pihole
+          - nextcloud
+
+    website:
+        image: nginx:latest
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./contexts/website/conf:/etc/nginx/conf.d:ro
+            - /etc/letsencrypt/:/etc/letsencrypt:ro
+        links:
+            - cloud
+            - iot
+            - homelab
+
+#    sshd:
+#        build: contexts/sshd
+#        restart: always
+#       ports:
+#            - "2222:22"
+#        volumes:
+#            - ~/.ssh:/root/host-ssh:ro
+#            - nextcloud:/volumes/nextcloud:rw
+#            - homeassistant-config:/volumes/hs-config:rw
+#            - db:/volumes/db
+
     db:
         image: mariadb:10.6
         restart: always
@@ -40,15 +80,13 @@ services:
             - db
             - db_root
 
-    nextcloud:
+    cloud:
         image: nextcloud
-        restart: unless-stopped
+        restart: always
         links:
             - db
         volumes:
             - nextcloud:/var/www/html
-        ports:
-            - 3001:80
         environment:
             MARIADB_PASSWORD_FILE: /run/secrets/db
             MARIADB_DATABASE: nextcloud
@@ -57,18 +95,37 @@ services:
         secrets:
             - db
 
-    homeassistant:
+    iot:
         image: homeassistant/home-assistant
-        restart: unless-stopped
-        ports:
-            - 80:8123
+        restart: always
         volumes:
-            - homeassistant-config:/config
+            - ./contexts/iot:/config
             - /etc/localtime:/etc/localtime:ro
 
-    tunnel:
-        image: cloudflare/cloudflared
+    projectsideline:
+        image: nginx
         restart: always
-        command: tunnel run
+        volumes:
+            - /home/josh/git/project-sideline/website/build:/var/www/html
+
+    ddns:
+        build: contexts/ddns
+        restart: always
         environment:
-            TUNNEL_TOKEN:
+            DOMAIN: "*.joshandrews.xyz"
+            # Get these from: https://www.cloudflare.com/a/account/my-account
+            AUTH_KEY_FILE: /run/secrets/ddns_api
+            EMAIL: joshurtree@gmail.com
+            # Get the Zone ID from: https://www.cloudflare.com/a/overview/<your-domain>
+            IDENTIFIER: 047b332798401343fe0d00705f7f6324
+            # Get the existing identifier for DNS entry: https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records
+            DNS_ZONE: 77f01c20b84a2667279a50acba998187
+             
+    glances:
+        image: nicolargo/glances:latest-full
+        restart: always
+        environment:
+            GLANCES_OPT: -w
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        pid: host

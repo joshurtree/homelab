@@ -1,0 +1,25 @@
+- General:
+    - Github:
+        - abbr: GH
+          href: https://github.com/
+    - Bitwarden:
+        - abbr: BW
+          href: https://bitwarden.com/
+- Documentation:
+    - HomeAssistant:
+        - abbr: HA
+          href: https://www.home-assistant.io/docs/
+    - NextCloud:
+        - abbr: NC
+          href: https://docs.nextcloud.com/
+    - PiHole:
+        - abbr: PH
+          href: https://docs.pi-hole.net/
+    - Homepage:
+        - abbr: HP
+          href: https://gethomepage.dev/latest/configs/
+
+- Entertainment:
+    - YouTube:
+        - abbr: YT 
+          href: https://youtube.com/
