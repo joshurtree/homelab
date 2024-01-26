@@ -1,9 +1,9 @@
 version: '3'
 volumes:
     nextcloud:
-    homeassistant-config:
     db:
-    bitwarden:
+    kuma:
+    nginx-pm:
 
 secrets:
     db_root: 
@@ -14,12 +14,13 @@ secrets:
         file: ./secrets/ddns_api
     pihole:
         file: ./secrets/pihole
-    nextcloud:
-        file: ./secrets/nextcloud
+    nextcloud_api:
+        file: ./secrets/nextcloud_api
     
 services:
-    homelab:
+    dash:
         image: ghcr.io/gethomepage/homepage:latest
+        container_name: dash
         ports:
             - 3000:3000
         volumes:
@@ -29,19 +30,20 @@ services:
             PUID: 
             PGID:
             HOMEPAGE_FILE_PIHOLE_KEY: /run/secrets/pihole 
-            HOMEPAGE_VAR_PIHOLE_KEY:
             HOMEPAGE_VAR_PIHOLE_IP:
-            HOMEPAGE_VAR_LAPTOP_IP:
+            HOMEPAGE_VAR_LAPTOP_ADDR:
             HOMEPAGE_VAR_HOMELAB_IP:
-            HOMEPAGE_FILE_NEXTCLOUD_KEY: /run/secrets/nextcloud
-        dns:
-            - $HOME_DNS
+            HOMEPAGE_FILE_NEXTCLOUD_KEY: /run/secrets/nextcloud_api
         secrets:
           - pihole
-          - nextcloud
+          - nextcloud_api
+        labels:
+            - "traefik.http.routers.whoami.rule=Host(`dash.joshandrews.xyz`)"
+
 
     website:
         image: nginx:latest
+        container_name: website
         restart: always
         ports:
             - "80:80"
@@ -52,21 +54,23 @@ services:
         links:
             - cloud
             - iot
-            - homelab
+            - dash
+        profiles: ["nginx-proxy"]
 
-#    sshd:
-#        build: contexts/sshd
-#        restart: always
-#       ports:
-#            - "2222:22"
-#        volumes:
-#            - ~/.ssh:/root/host-ssh:ro
-#            - nextcloud:/volumes/nextcloud:rw
-#            - homeassistant-config:/volumes/hs-config:rw
-#            - db:/volumes/db
-
+    sshd:
+        build: contexts/sshd
+        container_name: cloud
+        restart: always
+        ports:
+            - "2222:22"
+        volumes:
+            - ~/.ssh:/root/host-ssh:ro
+            - nextcloud:/volumes/nextcloud:rw
+            - db:/volumes/db
+        profiles: [ "unused" ]
     db:
         image: mariadb:10.6
+        container_name: db
         restart: always
         command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
         volumes:
@@ -82,7 +86,8 @@ services:
 
     cloud:
         image: nextcloud
-        restart: always
+        container_name: cloud
+        restart: unless-stopped
         links:
             - db
         volumes:
@@ -92,25 +97,33 @@ services:
             MARIADB_DATABASE: nextcloud
             MARIADB_USER: nextcloud
             MARIADB_HOST: db
+            
         secrets:
             - db
+        labels:
+            - "traefik.http.routers.cloud.rule=Host(`cloud.joshandrews.xyz`)"
 
     iot:
         image: homeassistant/home-assistant
-        restart: always
+        container_name: iot
+        restart: unless-stopped
         volumes:
             - ./contexts/iot:/config
             - /etc/localtime:/etc/localtime:ro
+        labels:
+            - "traefik.http.routers.iot.rule=Host(`iot.joshandrews.xyz`)"
 
     projectsideline:
         image: nginx
-        restart: always
+        container_name: projectsideline
+        restart: unless-stopped
         volumes:
             - /home/josh/git/project-sideline/website/build:/var/www/html
 
     ddns:
         build: contexts/ddns
-        restart: always
+        container_name: ddns
+        restart: unless-stopped
         environment:
             DOMAIN: "*.joshandrews.xyz"
             # Get these from: https://www.cloudflare.com/a/account/my-account
@@ -123,9 +136,88 @@ services:
              
     glances:
         image: nicolargo/glances:latest-full
-        restart: always
+        container_name: glances
+        restart: unless-stopped
         environment:
             GLANCES_OPT: -w
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro
         pid: host
+    
+    nginx-pm:
+        image: jc21/nginx-pr oxy-manager:latest
+        container_name: nginx-pm
+        volumes: 
+            - ./contexts/nginx-pm:/data
+            - /etc/letsencrypt:/etc/letsencrypt:rw
+        ports:
+            - "80:80"
+            - "443:443"
+            - "81:81"
+        restart: unless-stopped
+        profiles: [ "nginx-pm"]
+        
+    kuma:
+        image: louislam/uptime-kuma:latest
+        container_name: kuma
+        volumes:
+          - kuma:/app/data:rw
+
+    traefik:
+        image: traefik:v2.10
+        command: 
+            - "--providers.docker"
+            # Only enabled containers should be exposed
+            - "--providers.docker.exposedByDefault=false"
+            # We want to use the dashbaord
+            - "--api.dashboard=true"
+            # The entrypoints we ant to expose
+            - "--entrypoints.web.address=:80"
+            - "--entrypoints.websecure.address=:443"
+            # Enable ACME (Let's Encrypt): automatic SSL.
+            - "--certificatesresolvers.letsencrypt.acme.email=joshurtree@gmail.com"
+            - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
+            - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+            - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+            # Global redirect to https
+            - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+            - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            # The acme.json file is required by Let's Encrypt
+            - ./contexts/proxy/acme.json:/etc/traefik/acme/acme.json
+        labels:
+            # Since we don't expose containers per default we also need to enable traefik to expose the dashboard.
+            - "traefik.enable=true"
+            # http
+            # Since we are using the http challenge we and use the redirect we need 
+            #  to enable the http entrypoint.
+            - "traefik.http.routers.dashboard-http.entrypoints=web"
+            # The domain we want to listen to
+            - "traefik.http.routers.dashboard-http.rule=Host(`*.joshandrews.xyz`)"
+            # We need to attach the api@internal service to the dashboard-http router
+            #  in order for the dashboard to be able to access the api (I think 🙈)
+            - "traefik.http.routers.dashboard-http.service=api@internal"
+            # https
+            # Enable the https entrypoint
+            - "traefik.http.routers.dashboard.entrypoints=websecure"
+            # The domain we want to listen to
+            - "traefik.http.routers.dashboard.rule=Host(`*.joshandrews.xyz`)"
+            # We want to obtain a certificate through Let's Encrypt
+            - "traefik.http.routers.dashboard.tls=true"
+            - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+            # We need to attach the api@internal service to the dashboard router
+            #  in order for the dashboard to be able to access the api (I think 🙈)
+            - "traefik.http.routers.dashboard.service=api@internal"
+        profiles: ["traefik"]
+
+    cloudflared:
+        image: joshurtree/cloudflared
+        container_name: cloudflared
+        environment:
+            - TOKEN_FILE=/run/secrets/cloudflare
+        entrypoint: ["/bin/bash", "./init.sh", "tunnel", "--no-autoupdate"]
+        profiles: ["tunnel"]

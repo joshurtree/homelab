@@ -5,3 +5,4 @@ contexts/homepage/logs
 contexts/iot/.*
 contexts/iot/home-assistant.log*
 contexts/website/dns-creds.ini
+contexts/nginx-pm/logs/

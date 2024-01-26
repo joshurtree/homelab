@@ -11,7 +11,7 @@
     label: Homelab
 
 - glances:
-    url: "http://{{HOMEPAGE_VAR_LAPTOP_IP}}:61208"
+    url: "http://{{HOMEPAGE_VAR_LAPTOP_ADDR}}:61208"
     cpu: true # optional, enabled by default, disable by setting to false
     mem: true # optional, enabled by default, disable by setting to false
     cputemp: true # disabled by default

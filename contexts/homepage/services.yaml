@@ -33,28 +33,28 @@
 
 - Laptop:
     - info:
-        ping: acer-laptop
+        ping: "{{HOMEPAGE_VAR_LAPTOP_ADDR}}"
         widget:
             type: glances
-            url: http://acer-laptop:61208
+            url: "http://{{HOMEPAGE_VAR_LAPTOP_ADDR}}:61208"
             metric: info 
     - CPU Usage:
-        ping: acer-laptop
+        ping: "{{HOMEPAGE_VAR_LAPTOP_ADDR}}"
         widget:
             type: glances
-            url: http://acer-laptop:61208
+            url: "http://{{HOMEPAGE_VAR_LAPTOP_ADDR}}:61208"
             metric: cpu 
     - Memory:
-        ping: acer-laptop
+        ping: "{{HOMEPAGE_VAR_LAPTOP_ADDR}}"
         widget:
             type: glances
-            url: http://acer-laptop:61208
+            url: "http://{{HOMEPAGE_VAR_LAPTOP_ADDR}}:61208"
             metric: memory 
     - Network:
-        ping: acer-laptop
+        ping: "{{HOMEPAGE_VAR_LAPTOP_ADDR}}"
         widget:
             type: glances
-            url: http://acer-laptop:61208
+            url: "http://{{HOMEPAGE_VAR_LAPTOP_ADDR}}:61208"
             metric: network:wlp2s0
 
 - Homelab:
@@ -85,27 +85,27 @@
         
 - DNS Server:
     - info:
-        ping: pihole
+        ping: "{{HOMEPAGE_VAR_PIHOLE_IP}}"
         widget:
             type: glances
-            url: http://pihole:61208
+            url: "http://{{HOMEPAGE_VAR_PIHOLE_IP}}:61208"
             metric: info 
 
     - CPU Usage:
-        ping: pihole
+        ping: {"{{HOMEPAGE_VAR_PIHOLE_IP}}"}
         widget:
             type: glances
-            url: http://pihole:61208
+            url: "http://{{HOMEPAGE_VAR_PIHOLE_IP}}:61208"
             metric: cpu 
     - Memory:
-        ping: pihole
+        ping: {"{{HOMEPAGE_VAR_PIHOLE_IP}}"}
         widget:
             type: glances
-            url: http://pihole:61208
+            url: "http://{{HOMEPAGE_VAR_PIHOLE_IP}}:61208"
             metric: memory 
     - Network:
-        ping: pihole
+        ping: {"{{HOMEPAGE_VAR_PIHOLE_IP}}"}
         widget:
             type: glances
-            url: http://pihole:61208
+            url: "http://{{HOMEPAGE_VAR_PIHOLE_IP}}:61208"
             metric: network:eth0
