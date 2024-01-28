@@ -1,6 +1,5 @@
 .env
 secrets/*
-contexts/sshd/*
 contexts/homepage/logs
 contexts/iot/.*
 contexts/iot/home-assistant.log*

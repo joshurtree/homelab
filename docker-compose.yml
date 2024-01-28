@@ -4,18 +4,22 @@ volumes:
     db:
     kuma:
     nginx-pm:
+    certbot-www:
+    certbot-conf:
 
 secrets:
     db_root: 
         file: ./secrets/db_root
     db: 
         file: ./secrets/db
-    ddns_api:
-        file: ./secrets/ddns_api
+    ddns-api:
+        file: ./secrets/ddns-api
     pihole:
         file: ./secrets/pihole
-    nextcloud_api:
-        file: ./secrets/nextcloud_api
+    nextcloud-api:
+        file: ./secrets/nextcloud-api
+    cloudflare-dns:
+        file: ./secrets/cloudflare-dns
     
 services:
     dash:
@@ -33,29 +37,36 @@ services:
             HOMEPAGE_VAR_PIHOLE_IP:
             HOMEPAGE_VAR_LAPTOP_ADDR:
             HOMEPAGE_VAR_HOMELAB_IP:
-            HOMEPAGE_FILE_NEXTCLOUD_KEY: /run/secrets/nextcloud_api
+            HOMEPAGE_FILE_NEXTCLOUD_KEY: /run/secrets/nextcloud-api
         secrets:
           - pihole
-          - nextcloud_api
+          - nextcloud-api
         labels:
             - "traefik.http.routers.whoami.rule=Host(`dash.joshandrews.xyz`)"
 
-
-    website:
+    rproxy:
         image: nginx:latest
-        container_name: website
+        container_name: rproxy
         restart: always
         ports:
             - "80:80"
             - "443:443"
         volumes:
             - ./contexts/website/conf:/etc/nginx/conf.d:ro
-            - /etc/letsencrypt/:/etc/letsencrypt:ro
+            - certbot-conf:/etc/letsencrypt:ro
         links:
             - cloud
             - iot
             - dash
-        profiles: ["nginx-proxy"]
+
+    certbot:
+        image: certbot/dns-cloudflare:latest
+        container_name: certbot
+        volumes:
+            - certbot-www:/var/www/certbot/:rw
+            - certbot-conf:/etc/letsencrypt/:rw
+        secrets:
+            - cloudflare-dns
 
     sshd:
         build: contexts/sshd
@@ -104,14 +115,18 @@ services:
             - "traefik.http.routers.cloud.rule=Host(`cloud.joshandrews.xyz`)"
 
     iot:
-        image: homeassistant/home-assistant
+        image: ghcr.io/home-assistant/home-assistant:stable
         container_name: iot
         restart: unless-stopped
+        privileged: true
         volumes:
             - ./contexts/iot:/config
             - /etc/localtime:/etc/localtime:ro
+            - /run/dbus:/run/dbus
         labels:
             - "traefik.http.routers.iot.rule=Host(`iot.joshandrews.xyz`)"
+        ports:
+            - 8123:8123
 
     projectsideline:
         image: nginx
@@ -127,13 +142,15 @@ services:
         environment:
             DOMAIN: "*.joshandrews.xyz"
             # Get these from: https://www.cloudflare.com/a/account/my-account
-            AUTH_KEY_FILE: /run/secrets/ddns_api
+            AUTH_KEY_FILE: /run/secrets/ddns-api
             EMAIL: joshurtree@gmail.com
             # Get the Zone ID from: https://www.cloudflare.com/a/overview/<your-domain>
             IDENTIFIER: 047b332798401343fe0d00705f7f6324
             # Get the existing identifier for DNS entry: https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records
             DNS_ZONE: 77f01c20b84a2667279a50acba998187
-             
+        secrets:
+            - ddns-api
+
     glances:
         image: nicolargo/glances:latest-full
         container_name: glances
@@ -162,6 +179,7 @@ services:
         container_name: kuma
         volumes:
           - kuma:/app/data:rw
+          - /var/run/docker.sock:/var/run/docker.sock:rw
 
     traefik:
         image: traefik:v2.10
