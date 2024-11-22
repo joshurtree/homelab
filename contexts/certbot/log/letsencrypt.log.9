@@ -1,0 +1,156 @@
+2024-07-29 23:24:52,863:DEBUG:certbot._internal.main:certbot version: 2.8.0
+2024-07-29 23:24:52,864:DEBUG:certbot._internal.main:Location of certbot entry point: /usr/local/bin/certbot
+2024-07-29 23:24:52,864:DEBUG:certbot._internal.main:Arguments: []
+2024-07-29 23:24:52,864:DEBUG:certbot._internal.main:Discovered plugins: PluginsRegistry(PluginEntryPoint#dns-cloudflare,PluginEntryPoint#manual,PluginEntryPoint#null,PluginEntryPoint#standalone,PluginEntryPoint#webroot)
+2024-07-29 23:24:52,874:DEBUG:certbot._internal.log:Root logging level set at 30
+2024-07-29 23:24:52,875:DEBUG:certbot._internal.display.obj:Notifying user: Processing /etc/letsencrypt/renewal/joshandrews.xyz-0001.conf
+2024-07-29 23:24:52,876:ERROR:certbot._internal.renewal:Renewal configuration file /etc/letsencrypt/renewal/joshandrews.xyz-0001.conf is broken.
+2024-07-29 23:24:52,876:ERROR:certbot._internal.renewal:The error was: expected /etc/letsencrypt/live/joshandrews.xyz-0001/cert.pem to be a symlink
+Skipping.
+2024-07-29 23:24:52,877:DEBUG:certbot._internal.renewal:Traceback was:
+Traceback (most recent call last):
+  File "/opt/certbot/src/certbot/certbot/_internal/renewal.py", line 76, in reconstitute
+    renewal_candidate = storage.RenewableCert(full_path, config)
+  File "/opt/certbot/src/certbot/certbot/_internal/storage.py", line 510, in __init__
+    self._check_symlinks()
+  File "/opt/certbot/src/certbot/certbot/_internal/storage.py", line 589, in _check_symlinks
+    raise errors.CertStorageError(
+certbot.errors.CertStorageError: expected /etc/letsencrypt/live/joshandrews.xyz-0001/cert.pem to be a symlink
+
+2024-07-29 23:24:52,877:DEBUG:certbot._internal.display.obj:Notifying user: Processing /etc/letsencrypt/renewal/joshandrews.xyz.conf
+2024-07-29 23:24:52,878:DEBUG:certbot._internal.plugins.selection:Requested authenticator None and installer None
+2024-07-29 23:24:52,890:DEBUG:certbot._internal.storage:Should renew, less than 30 days before certificate expiry 2024-07-28 15:52:47 UTC.
+2024-07-29 23:24:52,890:INFO:certbot._internal.renewal:Certificate is due for renewal, auto-renewing...
+2024-07-29 23:24:52,890:DEBUG:certbot._internal.plugins.selection:Requested authenticator dns-cloudflare and installer None
+2024-07-29 23:24:52,890:DEBUG:certbot._internal.plugins.selection:Single candidate plugin: * dns-cloudflare
+Description: Obtain certificates using a DNS TXT record (if you are using Cloudflare for DNS).
+Interfaces: Authenticator, Plugin
+Entry point: EntryPoint(name='dns-cloudflare', value='certbot_dns_cloudflare._internal.dns_cloudflare:Authenticator', group='certbot.plugins')
+Initialized: <certbot_dns_cloudflare._internal.dns_cloudflare.Authenticator object at 0x7fffa2b21d20>
+Prep: True
+2024-07-29 23:24:52,891:DEBUG:certbot._internal.plugins.selection:Selected authenticator <certbot_dns_cloudflare._internal.dns_cloudflare.Authenticator object at 0x7fffa2b21d20> and installer None
+2024-07-29 23:24:52,891:INFO:certbot._internal.plugins.selection:Plugins selected: Authenticator dns-cloudflare, Installer None
+2024-07-29 23:24:53,115:DEBUG:certbot._internal.main:Picked account: <Account(RegistrationResource(body=Registration(key=None, contact=(), agreement=None, status=None, terms_of_service_agreed=None, only_return_existing=None, external_account_binding=None), uri='https://acme-v02.api.letsencrypt.org/acme/acct/1539842806', new_authzr_uri=None, terms_of_service=None), 2d35fcd35e7fe8bd84408d328f9c6d96, Meta(creation_dt=datetime.datetime(2024, 1, 27, 21, 46, 48, tzinfo=<UTC>), creation_host='ed505e3d71b6', register_to_eff=None))>
+2024-07-29 23:24:53,116:DEBUG:acme.client:Sending GET request to https://acme-v02.api.letsencrypt.org/directory.
+2024-07-29 23:24:53,118:DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): acme-v02.api.letsencrypt.org:443
+2024-07-29 23:24:53,499:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "GET /directory HTTP/1.1" 200 746
+2024-07-29 23:24:53,500:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Mon, 29 Jul 2024 23:24:53 GMT
+Content-Type: application/json
+Content-Length: 746
+Connection: keep-alive
+Cache-Control: public, max-age=0, no-cache
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "ftOY36kVnOg": "https://community.letsencrypt.org/t/adding-random-entries-to-the-directory/33417",
+  "keyChange": "https://acme-v02.api.letsencrypt.org/acme/key-change",
+  "meta": {
+    "caaIdentities": [
+      "letsencrypt.org"
+    ],
+    "termsOfService": "https://letsencrypt.org/documents/LE-SA-v1.4-April-3-2024.pdf",
+    "website": "https://letsencrypt.org"
+  },
+  "newAccount": "https://acme-v02.api.letsencrypt.org/acme/new-acct",
+  "newNonce": "https://acme-v02.api.letsencrypt.org/acme/new-nonce",
+  "newOrder": "https://acme-v02.api.letsencrypt.org/acme/new-order",
+  "renewalInfo": "https://acme-v02.api.letsencrypt.org/draft-ietf-acme-ari-03/renewalInfo",
+  "revokeCert": "https://acme-v02.api.letsencrypt.org/acme/revoke-cert"
+}
+2024-07-29 23:24:53,501:DEBUG:certbot._internal.display.obj:Notifying user: Renewing an existing certificate for *.joshandrews.xyz
+2024-07-29 23:24:53,504:DEBUG:acme.client:Requesting fresh nonce
+2024-07-29 23:24:53,504:DEBUG:acme.client:Sending HEAD request to https://acme-v02.api.letsencrypt.org/acme/new-nonce.
+2024-07-29 23:24:53,632:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "HEAD /acme/new-nonce HTTP/1.1" 200 0
+2024-07-29 23:24:53,632:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Mon, 29 Jul 2024 23:24:53 GMT
+Connection: keep-alive
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Replay-Nonce: 26MCSEcknXFX8nZzJ2KT6loHAoDeLnTnY-f-b2lJkqkTMU6WDsE
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+
+2024-07-29 23:24:53,633:DEBUG:acme.client:Storing nonce: 26MCSEcknXFX8nZzJ2KT6loHAoDeLnTnY-f-b2lJkqkTMU6WDsE
+2024-07-29 23:24:53,633:DEBUG:acme.client:JWS payload:
+b'{\n  "identifiers": [\n    {\n      "type": "dns",\n      "value": "*.joshandrews.xyz"\n    }\n  ]\n}'
+2024-07-29 23:24:53,640:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/new-order:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAia2lkIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2FjY3QvMTUzOTg0MjgwNiIsICJub25jZSI6ICIyNk1DU0Vja25YRlg4blp6SjJLVDZsb0hBb0RlTG5UblktZi1iMmxKa3FrVE1VNldEc0UiLCAidXJsIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL25ldy1vcmRlciJ9",
+  "signature": "j1vTWKEKWcUhL-7fuYAb_zbDOoqdkuR2XI05GW7jvdtJA1Ptm3S4Vlu7q-omSpBQ1dHfNwby0DWNOoXfz2BZKlcowW2n_hgr2tG_2nheOb2t0GwrCnHJ9dio8FWP8Ov6RalB2zzToaCLpWyi45RV4j3JkZzcYkFkJA1Uh1NkAAcE-O3ylCckr57it8cH01Zv4aJxkvEUX_eUczdDrvVmlwRVaDa_6g7JlgJXUIVbiVfgi6bG1M03pUCX0q5Z-d0S1i24toKIJc3gX2QTbh2ldOb0cMIQBosOX4sVoFR8VnlCw0rQv3SoCb7APKMC_HPrbxtf8RiuwFfpTMBxAbhzzQ",
+  "payload": "ewogICJpZGVudGlmaWVycyI6IFsKICAgIHsKICAgICAgInR5cGUiOiAiZG5zIiwKICAgICAgInZhbHVlIjogIiouam9zaGFuZHJld3MueHl6IgogICAgfQogIF0KfQ"
+}
+2024-07-29 23:24:53,793:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/new-order HTTP/1.1" 429 323
+2024-07-29 23:24:53,794:DEBUG:acme.client:Received response:
+HTTP 429
+Server: nginx
+Date: Mon, 29 Jul 2024 23:24:53 GMT
+Content-Type: application/problem+json
+Content-Length: 323
+Connection: keep-alive
+Boulder-Requester: 1539842806
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index", <https://letsencrypt.org/docs/rate-limits>;rel="help"
+Replay-Nonce: Ma8ZwRNAGSlOzASqrYDKwgtpLu7x6Xu5Iyj_MdNujOwnAFhW7Uc
+Retry-After: 117307
+
+{
+  "type": "urn:ietf:params:acme:error:rateLimited",
+  "detail": "Error creating new order :: too many certificates (5) already issued for this exact set of domains in the last 168 hours: *.joshandrews.xyz, retry after 2024-07-31T08:00:01Z: see https://letsencrypt.org/docs/duplicate-certificate-limit/",
+  "status": 429
+}
+2024-07-29 23:24:53,794:ERROR:certbot._internal.renewal:Failed to renew certificate joshandrews.xyz with error: urn:ietf:params:acme:error:rateLimited :: There were too many requests of a given type :: Error creating new order :: too many certificates (5) already issued for this exact set of domains in the last 168 hours: *.joshandrews.xyz, retry after 2024-07-31T08:00:01Z: see https://letsencrypt.org/docs/duplicate-certificate-limit/
+2024-07-29 23:24:53,796:DEBUG:certbot._internal.renewal:Traceback was:
+Traceback (most recent call last):
+  File "/opt/certbot/src/certbot/certbot/_internal/renewal.py", line 540, in handle_renewal_request
+    main.renew_cert(lineage_config, plugins, renewal_candidate)
+  File "/opt/certbot/src/certbot/certbot/_internal/main.py", line 1550, in renew_cert
+    renewed_lineage = _get_and_save_cert(le_client, config, lineage=lineage)
+  File "/opt/certbot/src/certbot/certbot/_internal/main.py", line 131, in _get_and_save_cert
+    renewal.renew_cert(config, domains, le_client, lineage)
+  File "/opt/certbot/src/certbot/certbot/_internal/renewal.py", line 399, in renew_cert
+    new_cert, new_chain, new_key, _ = le_client.obtain_certificate(domains, new_key)
+  File "/opt/certbot/src/certbot/certbot/_internal/client.py", line 428, in obtain_certificate
+    orderr = self._get_order_and_authorizations(csr.data, self.config.allow_subset_of_names)
+  File "/opt/certbot/src/certbot/certbot/_internal/client.py", line 478, in _get_order_and_authorizations
+    orderr = self.acme.new_order(csr_pem)
+  File "/opt/certbot/src/acme/acme/client.py", line 137, in new_order
+    response = self._post(self.directory['newOrder'], order)
+  File "/opt/certbot/src/acme/acme/client.py", line 365, in _post
+    return self.net.post(*args, **kwargs)
+  File "/opt/certbot/src/acme/acme/client.py", line 738, in post
+    return self._post_once(*args, **kwargs)
+  File "/opt/certbot/src/acme/acme/client.py", line 751, in _post_once
+    response = self._check_response(response, content_type=content_type)
+  File "/opt/certbot/src/acme/acme/client.py", line 602, in _check_response
+    raise messages.Error.from_json(jobj)
+acme.messages.Error: urn:ietf:params:acme:error:rateLimited :: There were too many requests of a given type :: Error creating new order :: too many certificates (5) already issued for this exact set of domains in the last 168 hours: *.joshandrews.xyz, retry after 2024-07-31T08:00:01Z: see https://letsencrypt.org/docs/duplicate-certificate-limit/
+
+2024-07-29 23:24:53,798:DEBUG:certbot._internal.display.obj:Notifying user: 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+2024-07-29 23:24:53,799:ERROR:certbot._internal.renewal:All renewals failed. The following certificates could not be renewed:
+2024-07-29 23:24:53,799:ERROR:certbot._internal.renewal:  /etc/letsencrypt/live/joshandrews.xyz/fullchain.pem (failure)
+2024-07-29 23:24:53,799:DEBUG:certbot._internal.display.obj:Notifying user: 
+Additionally, the following renewal configurations were invalid: 
+2024-07-29 23:24:53,799:DEBUG:certbot._internal.display.obj:Notifying user:   /etc/letsencrypt/renewal/joshandrews.xyz-0001.conf (parsefail)
+2024-07-29 23:24:53,799:DEBUG:certbot._internal.display.obj:Notifying user: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+2024-07-29 23:24:53,799:DEBUG:certbot._internal.log:Exiting abnormally:
+Traceback (most recent call last):
+  File "/usr/local/bin/certbot", line 33, in <module>
+    sys.exit(load_entry_point('certbot', 'console_scripts', 'certbot')())
+  File "/opt/certbot/src/certbot/certbot/main.py", line 19, in main
+    return internal_main.main(cli_args)
+  File "/opt/certbot/src/certbot/certbot/_internal/main.py", line 1869, in main
+    return config.func(config, plugins)
+  File "/opt/certbot/src/certbot/certbot/_internal/main.py", line 1642, in renew
+    renewed_domains, failed_domains = renewal.handle_renewal_request(config)
+  File "/opt/certbot/src/certbot/certbot/_internal/renewal.py", line 568, in handle_renewal_request
+    raise errors.Error(
+certbot.errors.Error: 1 renew failure(s), 1 parse failure(s)
+2024-07-29 23:24:53,799:ERROR:certbot._internal.log:1 renew failure(s), 1 parse failure(s)

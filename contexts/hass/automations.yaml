@@ -1,0 +1,113 @@
+- id: '1706457769846'
+  alias: Leaving house
+  description: Operations when leaving house
+  trigger:
+  - platform: device
+    device_id: 9070bb728d88faa1a49ea64eac9c1504
+    domain: device_tracker
+    entity_id: d4e0177adea842ccdfeae2eb2f4ded47
+    type: leaves
+    zone: zone.home
+  condition: []
+  action:
+  - type: turn_off
+    device_id: fff69a8c1bb310aa81e70b72b1e54024
+    entity_id: ad33aa80058e2d6299c53bc27fb64f37
+    domain: switch
+  - type: turn_off
+    device_id: 0a21efeb1a909565a1fa23d2f9f50f4a
+    entity_id: dd98c4ff9c58303ffd127cfbe18ba1ae
+    domain: switch
+  - type: turn_off
+    device_id: 4a46c3a03a175613f6b864b1355a2ed3
+    entity_id: 4ca76188528cef5a1b05ae04972c2c54
+    domain: switch
+  - type: turn_off
+    device_id: 616e5d8b375d88eb1abf7be6b7a05803
+    entity_id: f31fc1e899f9cb263cf536d67d1e686c
+    domain: switch
+  mode: single
+- id: '1706457902919'
+  alias: Returning home
+  description: ''
+  trigger:
+  - platform: device
+    device_id: 9070bb728d88faa1a49ea64eac9c1504
+    domain: device_tracker
+    entity_id: d4e0177adea842ccdfeae2eb2f4ded47
+    type: enters
+    zone: zone.home
+  condition: []
+  action:
+  - type: turn_on
+    device_id: fff69a8c1bb310aa81e70b72b1e54024
+    entity_id: ad33aa80058e2d6299c53bc27fb64f37
+    domain: switch
+  - type: turn_on
+    device_id: 0a21efeb1a909565a1fa23d2f9f50f4a
+    entity_id: dd98c4ff9c58303ffd127cfbe18ba1ae
+    domain: switch
+  - type: turn_on
+    device_id: 4a46c3a03a175613f6b864b1355a2ed3
+    entity_id: 4ca76188528cef5a1b05ae04972c2c54
+    domain: switch
+  mode: single
+- id: '1706880984388'
+  alias: Microwave Auto Off (start)
+  description: 'Automatically switch off microwave after set period. '
+  trigger:
+  - platform: state
+    entity_id:
+    - timer.microwave_meal
+    - timer.snack
+    - timer.pizza
+    - timer.pie
+    to: active
+  condition:
+  - condition: device
+    type: is_off
+    device_id: 0a21efeb1a909565a1fa23d2f9f50f4a
+    entity_id: dd98c4ff9c58303ffd127cfbe18ba1ae
+    domain: switch
+  action:
+  - type: turn_on
+    device_id: 0a21efeb1a909565a1fa23d2f9f50f4a
+    entity_id: dd98c4ff9c58303ffd127cfbe18ba1ae
+    domain: switch
+  mode: single
+- id: '1706886135038'
+  alias: Microwave Auto Off
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - timer.pie
+    - timer.pizza
+    - timer.microwave_meal
+    - timer.snack
+    from: active
+    to: idle
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 0a21efeb1a909565a1fa23d2f9f50f4a
+    entity_id: dd98c4ff9c58303ffd127cfbe18ba1ae
+    domain: switch
+  mode: single
+- id: '1707020557841'
+  alias: Phone charger auto off
+  description: ''
+  trigger:
+  - type: battery_level
+    platform: device
+    device_id: 9070bb728d88faa1a49ea64eac9c1504
+    entity_id: 6dd1ff2d4328ffd709f85c6f3c2a8e41
+    domain: sensor
+    above: 95
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 616e5d8b375d88eb1abf7be6b7a05803
+    entity_id: f31fc1e899f9cb263cf536d67d1e686c
+    domain: switch
+  mode: single

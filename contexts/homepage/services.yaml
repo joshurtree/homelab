@@ -1,17 +1,21 @@
 - Servers:
     - PiHole:
         icon: pi-hole.png
-        href: http://pihole/admin
+        href: "http://{{HOMEPAGE_VAR_PIHOLE_ADDR}}/admin"
         description: Pi Hole (DNS server)
         widget:
             type: pihole
-            url: http://pihole
+            url: "http://{{HOMEPAGE_VAR_PIHOLE_ADDR}}"
             key: "{{HOMEPAGE_FILE_PIHOLE_KEY}}"
 
     - HomeAssistant:
         icon: home-assistant.png
         href: https://iot.joshandrews.xyz
         description: Home Assistant (Home automation)
+        widget:
+            type: homeassistant
+            url: https://iot.joshandrews.xyz
+            key: "{{HOMEPAGE_FILE_HASS_KEY}}"
 
     - NextCloud:
         icon: nextcloud.png

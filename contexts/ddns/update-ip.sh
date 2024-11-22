@@ -32,10 +32,8 @@ EOF
 )
 
 curl "https://api.cloudflare.com/client/v4/zones/$DNS_ZONE/dns_records/$IDENTIFIER" \
-     --silent \
      -X PUT \
      -H "Content-Type: application/json" \
-     -H "X-Auth-Email: $AUTH_EMAIL" \
-     -H "X-Auth-Key: $AUTH_KEY" \
+     -H "Authorization: Bearer $AUTH_KEY" \
      -d "$_UPDATE" > /tmp/cloudflare-ddns-update.json && \
      echo $_IP > $_PREV_IP_FILE

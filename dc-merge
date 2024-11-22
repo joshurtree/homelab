@@ -1,0 +1,9 @@
+#!/bin/bash
+# Fudge until docker compose with include is available
+
+cat main.yml > compose.yml
+for file in backend frontend 
+do
+    cat <(echo) >> compose.yml
+    sed '1d' $file.yml >> compose.yml
+done

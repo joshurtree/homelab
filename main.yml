@@ -1,0 +1,46 @@
+volumes:
+    nextcloud:
+    db:
+    kuma:
+    nginx-pm:
+    certbot-lib:
+    certbot-conf:
+    hass:
+    portainer:
+    node-red:
+
+networks:
+    homelab-frontend:
+        external: true
+    homelab-backend:
+        external: true
+
+secrets:
+    db_root: 
+        file: ./secrets/db_root
+    db: 
+        file: ./secrets/db
+    ddns-api:
+        file: ./secrets/ddns-api
+    pihole:
+        file: ./secrets/pihole
+    nextcloud-api:
+        file: ./secrets/nextcloud-api
+    cloudflare-dns:
+        file: ./secrets/cloudflare-dns
+    hass-api:
+        file: ./secrets/hass-api
+        
+services:
+    rproxy:
+        image: nginx:latest
+        container_name: rproxy
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./contexts/nginx/conf:/etc/nginx/conf.d:ro
+            - certbot-conf:/etc/letsencrypt
+        networks:
+            - homelab-frontend

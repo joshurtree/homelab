@@ -1,0 +1,155 @@
+services:
+    iot:
+        image: homeassistant/home-assistant
+        container_name: iot
+        restart: unless-stopped
+        volumes:
+            - ./contexts/iot:/config
+            - /etc/localtime:/etc/localtime:ro
+            - /run/dbus:/run/dbus
+            - /home/josh/.ssh/id_rsa:/config/id_rsa
+            - certbot-conf:/etc/letsencrypt/:rw
+        environment:
+          DISABLE_JEMALLOC: 'true'
+        #labels:
+        #    - "traefik.http.routers.iot.rule=Host(`iot.joshandrews.xyz`)"
+        ports:
+            - 8123:8123
+        dns:
+            - 192.168.1.11
+            - 212.159.13.49
+        networks:
+            - homelab-frontend
+            - homelab-backend
+
+    office:
+        image: collabora/code
+        container_name: collabora
+        restart: unless-stopped
+        ports:
+            - "9980:9980"
+        environment:
+            extra_params: --o:ssl.enable=false --o:ssl.termination=true
+            dommain: joshandrews.xyz
+            server_name: office.joshandrews.xyz
+        networks:
+            - homelab-frontend
+            - homelab-backend
+
+    projectsideline:
+        image: nginx
+        container_name: projectsideline
+        restart: unless-stopped
+        volumes:
+            - /home/josh/git/project-sideline/website/build:/var/www/html
+        networks:
+            - homelab-frontend
+            - homelab-backend
+
+    cloud:
+        image: nextcloud
+        container_name: cloud
+        restart: unless-stopped
+        links:
+            - db
+        volumes:
+            - ./contexts/nextcloud/data:/var/www/html
+            - certbot-conf:/etc/letsencrypt/:rw
+
+        environment:
+            MARIADB_PASSWORD_FILE: /run/secrets/db
+            MARIADB_DATABASE: nextcloud
+            MARIADB_USER: nextcloud
+            MARIADB_HOST: db
+        networks:
+            homelab-frontend:
+                aliases:
+                    - cloud
+                    - cloud.joshandrews.xyz
+        secrets:
+            - db
+        labels:
+            - "traefik.http.routers.cloud.rule=Host(`cloud.joshandrews.xyz`)"
+        networks:
+            - homelab-frontend
+            - homelab-backend
+
+    sshd:
+        build: contexts/sshd
+        container_name: sshd
+        restart: always
+        ports:
+            - "2222:22"
+        volumes:
+            - ~/.ssh:/root/host-ssh:ro
+            - nextcloud:/volumes/nextcloud:rw
+            - db:/volumes/db
+            - hass:/volumes/hass
+            - certbot-conf:/volumes/certbot-conf
+            - certbot-lib:/volumes/certbot-lib
+            - kuma:/volumes/kuma
+            - portainer:/volumes/portainer
+        networks:
+            - homelab-frontend
+
+    dash:
+        image: ghcr.io/gethomepage/homepage:latest
+        container_name: dash
+        volumes:
+            - ./contexts/homepage:/app/config # Make sure your local config directory exists
+            - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
+        environment:
+            PUID: 
+            PGID:
+            HOMEPAGE_FILE_PIHOLE_KEY: /run/secrets/pihole 
+            HOMEPAGE_VAR_PIHOLE_IP:
+            HOMEPAGE_VAR_PIHOLE_ADDR:
+            HOMEPAGE_VAR_LAPTOP_ADDR:
+            HOMEPAGE_VAR_HOMELAB_IP:
+            HOMEPAGE_VAR_HOMELAB_ADDR:
+            HOMEPAGE_FILE_NEXTCLOUD_KEY: /run/secrets/nextcloud-api
+            HOMEPAGE_FILE_HASS_KEY: /run/secrets/hass-api
+        secrets:
+          - pihole
+          - nextcloud-api
+          - hass-api
+        labels:
+            - "traefik.http.routers.whoami.rule=Host(`dash.joshandrews.xyz`)"
+        networks:
+            - homelab-frontend
+            - homelab-backend
+
+    portainer:
+        image: portainer/portainer-ce:latest
+        container_name: portainer
+        restart: unless-stopped
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:rw
+            - portainer:/data
+        networks:
+            - homelab-frontend
+            - homelab-backend
+        environment:
+            VIRTUAL_HOST: portainer.joshandrews.xyz
+            VIRTUAL_PORT: 9000
+
+    kuma:
+        image: louislam/uptime-kuma:latest
+        container_name: kuma
+        volumes:
+          - kuma:/app/data:rw
+          - /var/run/docker.sock:/var/run/docker.sock:rw
+        networks:
+            - homelab-frontend
+            - homelab-backend
+            
+    node-red:
+        image: nodered/node-red:latest
+        environment:
+            - TZ=Europe/London
+        networks:
+            - homelab-frontend
+            - homelab-backend
+        volumes:
+            - node-red:/data
+            

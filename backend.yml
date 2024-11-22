@@ -1,0 +1,80 @@
+services:
+    ddns:
+        build: contexts/ddns
+        container_name: ddns
+        restart: unless-stopped
+        environment:
+            DOMAIN_NAME: "*.joshandrews.xyz"
+            # Get these from: https://www.cloudflare.com/a/account/my-account
+            AUTH_KEY_FILE: /run/secrets/ddns-api
+            # Get the Zone ID from: https://www.cloudflare.com/a/overview/<your-domain>
+            IDENTIFIER: 047b332798401343fe0d00705f7f6324
+            # Get the existing identifier for DNS entry: https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records
+            DNS_ZONE: 77f01c20b84a2667279a50acba998187
+        secrets:
+            - ddns-api
+        networks:
+            - homelab-backend
+        profile: [ "unused" ]
+    glances:
+        image: nicolargo/glances:latest-full
+        container_name: glances
+        restart: unless-stopped
+        environment:
+            GLANCES_OPT: -w
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /etc/os-release:/etc/os-release:ro
+          - /proc:/proc
+        pid: host
+        networks:
+            - homelab-backend
+        
+    db:
+        image: mariadb:10.6
+        container_name: db
+        restart: always
+        command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+        volumes:
+            - db:/var/lib/mysql
+        environment:
+            MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root
+            MARIADB_PASSWORD_FILE: /run/secrets/db
+            MARIADB_DATABASE: nextcloud
+            MARIADB_USER: nextcloud
+        secrets:
+            - db
+            - db_root
+        networks:
+            - homelab-backend
+
+    stt-api:
+        build: https://github.com/joshurtree/stt-api.git
+        container_name: stt-api
+        restart: unless-stopped
+        environment:
+            STT_API_VERSION: 20
+        networks:
+            - homelab-backend
+
+    certbot:
+        image: certbot/dns-cloudflare:latest
+        container_name: certbot
+        command: [  "certonly", 
+                    "--non-interactive", 
+                    "--dns-cloudflare", 
+                    "--dns-cloudflare-credentials",
+                    "/run/secrets/cloudflare-dns", 
+                    "--agree-tos", 
+                    "--keep-until-expiring",
+                    "-d", 
+                    "*.joshandrews.xyz"
+        ]
+        volumes:
+            - certbot-lib:/var/lib/letsencrypt/:rw
+            - certbot-conf:/etc/letsencrypt/:rw
+            - ./contexts/certbot/log:/var/log/letsencrypt:rw
+        secrets:
+            - cloudflare-dns
+        networks:
+            - homelab-backend

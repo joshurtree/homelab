@@ -1,0 +1,55 @@
+2024-07-31 02:21:30,615:DEBUG:certbot._internal.main:certbot version: 2.8.0
+2024-07-31 02:21:30,616:DEBUG:certbot._internal.main:Location of certbot entry point: /usr/local/bin/certbot
+2024-07-31 02:21:30,616:DEBUG:certbot._internal.main:Arguments: []
+2024-07-31 02:21:30,616:DEBUG:certbot._internal.main:Discovered plugins: PluginsRegistry(PluginEntryPoint#dns-cloudflare,PluginEntryPoint#manual,PluginEntryPoint#null,PluginEntryPoint#standalone,PluginEntryPoint#webroot)
+2024-07-31 02:21:30,627:DEBUG:certbot._internal.log:Root logging level set at 30
+2024-07-31 02:21:30,628:DEBUG:certbot._internal.display.obj:Notifying user: Processing /etc/letsencrypt/renewal/joshandrews.xyz-0001.conf
+2024-07-31 02:21:30,629:ERROR:certbot._internal.renewal:Renewal configuration file /etc/letsencrypt/renewal/joshandrews.xyz-0001.conf is broken.
+2024-07-31 02:21:30,629:ERROR:certbot._internal.renewal:The error was: expected /etc/letsencrypt/live/joshandrews.xyz-0001/cert.pem to be a symlink
+Skipping.
+2024-07-31 02:21:30,630:DEBUG:certbot._internal.renewal:Traceback was:
+Traceback (most recent call last):
+  File "/opt/certbot/src/certbot/certbot/_internal/renewal.py", line 76, in reconstitute
+    renewal_candidate = storage.RenewableCert(full_path, config)
+  File "/opt/certbot/src/certbot/certbot/_internal/storage.py", line 510, in __init__
+    self._check_symlinks()
+  File "/opt/certbot/src/certbot/certbot/_internal/storage.py", line 589, in _check_symlinks
+    raise errors.CertStorageError(
+certbot.errors.CertStorageError: expected /etc/letsencrypt/live/joshandrews.xyz-0001/cert.pem to be a symlink
+
+2024-07-31 02:21:30,630:DEBUG:certbot._internal.display.obj:Notifying user: Processing /etc/letsencrypt/renewal/joshandrews.xyz.conf
+2024-07-31 02:21:30,631:ERROR:certbot._internal.renewal:Renewal configuration file /etc/letsencrypt/renewal/joshandrews.xyz.conf is broken.
+2024-07-31 02:21:30,631:ERROR:certbot._internal.renewal:The error was: target /etc/letsencrypt/archive/joshandrews.xyz-0001/cert1.pem of symlink /etc/letsencrypt/live/joshandrews.xyz/cert.pem does not exist
+Skipping.
+2024-07-31 02:21:30,632:DEBUG:certbot._internal.renewal:Traceback was:
+Traceback (most recent call last):
+  File "/opt/certbot/src/certbot/certbot/_internal/renewal.py", line 76, in reconstitute
+    renewal_candidate = storage.RenewableCert(full_path, config)
+  File "/opt/certbot/src/certbot/certbot/_internal/storage.py", line 510, in __init__
+    self._check_symlinks()
+  File "/opt/certbot/src/certbot/certbot/_internal/storage.py", line 593, in _check_symlinks
+    raise errors.CertStorageError("target {0} of symlink {1} does "
+certbot.errors.CertStorageError: target /etc/letsencrypt/archive/joshandrews.xyz-0001/cert1.pem of symlink /etc/letsencrypt/live/joshandrews.xyz/cert.pem does not exist
+
+2024-07-31 02:21:30,632:DEBUG:certbot._internal.display.obj:Notifying user: 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+2024-07-31 02:21:30,632:DEBUG:certbot._internal.display.obj:Notifying user: No renewals were attempted.
+2024-07-31 02:21:30,632:DEBUG:certbot._internal.display.obj:Notifying user: 
+Additionally, the following renewal configurations were invalid: 
+2024-07-31 02:21:30,632:DEBUG:certbot._internal.display.obj:Notifying user:   /etc/letsencrypt/renewal/joshandrews.xyz-0001.conf (parsefail)
+  /etc/letsencrypt/renewal/joshandrews.xyz.conf (parsefail)
+2024-07-31 02:21:30,632:DEBUG:certbot._internal.display.obj:Notifying user: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+2024-07-31 02:21:30,632:DEBUG:certbot._internal.log:Exiting abnormally:
+Traceback (most recent call last):
+  File "/usr/local/bin/certbot", line 33, in <module>
+    sys.exit(load_entry_point('certbot', 'console_scripts', 'certbot')())
+  File "/opt/certbot/src/certbot/certbot/main.py", line 19, in main
+    return internal_main.main(cli_args)
+  File "/opt/certbot/src/certbot/certbot/_internal/main.py", line 1869, in main
+    return config.func(config, plugins)
+  File "/opt/certbot/src/certbot/certbot/_internal/main.py", line 1642, in renew
+    renewed_domains, failed_domains = renewal.handle_renewal_request(config)
+  File "/opt/certbot/src/certbot/certbot/_internal/renewal.py", line 568, in handle_renewal_request
+    raise errors.Error(
+certbot.errors.Error: 0 renew failure(s), 2 parse failure(s)
+2024-07-31 02:21:30,633:ERROR:certbot._internal.log:0 renew failure(s), 2 parse failure(s)

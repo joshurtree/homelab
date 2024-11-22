@@ -1,0 +1,15 @@
+find_my_phone:
+  alias: Find my phone
+  sequence:
+  - service: notify.mobile_app_moto_g31_w
+    data:
+      title: Find me
+      message: Find my Phone
+      data:
+        ttl: 0
+        priority: high
+        media_stream: alarm_stream_max
+        channel: alarm_stream
+        sticky: true
+  mode: single
+  icon: mdi:card-account-phone

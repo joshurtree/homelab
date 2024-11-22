@@ -1,0 +1,34 @@
+include:
+    - proxy.yml
+    - frontend.yml
+    - backend.yml
+
+volumes:
+    nextcloud:
+    db:
+    kuma:
+    nginx-pm:
+    certbot-www:
+    certbot-conf:
+    hass:
+    portainer:
+
+networks:
+    homelab:
+        external: true
+
+secrets:
+    db_root: 
+        file: ./secrets/db_root
+    db: 
+        file: ./secrets/db
+    ddns-api:
+        file: ./secrets/ddns-api
+    pihole:
+        file: ./secrets/pihole
+    nextcloud-api:
+        file: ./secrets/nextcloud-api
+    cloudflare-dns:
+        file: ./secrets/cloudflare-dns
+    hass-api:
+        file: ./secrets/hass-api

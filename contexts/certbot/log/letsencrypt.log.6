@@ -1,0 +1,34 @@
+2024-07-31 02:23:08,441:DEBUG:certbot._internal.main:certbot version: 2.8.0
+2024-07-31 02:23:08,441:DEBUG:certbot._internal.main:Location of certbot entry point: /usr/local/bin/certbot
+2024-07-31 02:23:08,442:DEBUG:certbot._internal.main:Arguments: ['-v']
+2024-07-31 02:23:08,442:DEBUG:certbot._internal.main:Discovered plugins: PluginsRegistry(PluginEntryPoint#dns-cloudflare,PluginEntryPoint#manual,PluginEntryPoint#null,PluginEntryPoint#standalone,PluginEntryPoint#webroot)
+2024-07-31 02:23:08,452:DEBUG:certbot._internal.log:Root logging level set at 20
+2024-07-31 02:23:08,453:DEBUG:certbot._internal.log:Exiting abnormally:
+Traceback (most recent call last):
+  File "/opt/certbot/src/certbot/certbot/_internal/storage.py", line 238, in get_link_target
+    target = filesystem.readlink(link)
+  File "/opt/certbot/src/certbot/certbot/compat/filesystem.py", line 405, in readlink
+    path = os.readlink(link_path)
+FileNotFoundError: [Errno 2] No such file or directory: '/etc/letsencrypt/live/joshandrews.xyz-0001/cert.pem'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/bin/certbot", line 33, in <module>
+    sys.exit(load_entry_point('certbot', 'console_scripts', 'certbot')())
+  File "/opt/certbot/src/certbot/certbot/main.py", line 19, in main
+    return internal_main.main(cli_args)
+  File "/opt/certbot/src/certbot/certbot/_internal/main.py", line 1869, in main
+    return config.func(config, plugins)
+  File "/opt/certbot/src/certbot/certbot/_internal/main.py", line 1287, in update_symlinks
+    cert_manager.update_live_symlinks(config)
+  File "/opt/certbot/src/certbot/certbot/_internal/cert_manager.py", line 46, in update_live_symlinks
+    storage.RenewableCert(renewal_file, config, update_symlinks=True)
+  File "/opt/certbot/src/certbot/certbot/_internal/storage.py", line 509, in __init__
+    self._update_symlinks()
+  File "/opt/certbot/src/certbot/certbot/_internal/storage.py", line 600, in _update_symlinks
+    previous_link = get_link_target(link)
+  File "/opt/certbot/src/certbot/certbot/_internal/storage.py", line 240, in get_link_target
+    raise errors.CertStorageError(
+certbot.errors.CertStorageError: Expected /etc/letsencrypt/live/joshandrews.xyz-0001/cert.pem to be a symlink
+2024-07-31 02:23:08,454:ERROR:certbot._internal.log:Expected /etc/letsencrypt/live/joshandrews.xyz-0001/cert.pem to be a symlink
